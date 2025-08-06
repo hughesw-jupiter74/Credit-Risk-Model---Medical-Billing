@@ -91,4 +91,34 @@ summary_stats <- df_risk %>%
   ) %>%
   arrange(desc(RiskyClaims))
 
+summary_stats$InsuranceType <- reorder(summary_stats$InsuranceType, summary_stats$AvgDaysToPay)
+
+ggplot(summary_stats, aes(x = AvgDaysToPay, y = InsuranceType, fill = RiskyClaims)) +
+  geom_col() +
+  scale_fill_gradient(low = "#56B1F7", high = "#132B43") +
+  labs(
+    title = "Average Days to Pay by Insurance Type",
+    subtitle = "Color intensity indicates volume of risky claims",
+    x = "Average Days to Pay",
+    y = "Insurance Type",
+    fill = "Risky Claims"
+  ) +
+  theme_minimal(base_size = 14)
+
+# Convert summary_stats to long format
+library(tidyr)
+
+long_stats <- summary_stats %>%
+  pivot_longer(cols = c(AvgDaysToPay, AvgTotalCharges), names_to = "Metric", values_to = "Value")
+
+ggplot(long_stats, aes(x = InsuranceType, y = Value, fill = Metric)) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Avg Days to Pay vs Avg Total Charges by Insurance Type",
+    x = "Insurance Type", y = "Value", fill = "Metric"
+  ) +
+  theme_minimal(base_size = 14)
+
+
 print(summary_stats)
+
